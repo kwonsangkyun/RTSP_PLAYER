@@ -27,7 +27,10 @@
 #define RTSP_HEADER_NAME_SPEED "Speed"
 #define RTSP_HEADER_NAME_RANGE "Range"
 #define RTSP_HEADER_NAME_RTP_INFO "RTP-Info"
+#define RTSP_HEADER_NAME_AUTH "Authorization"
+#define RTSP_HEADER_NAME_DIGEST "Digest"
 #define RTSP_HEADER_NAME_AURHENTICATE "WWW-Authenticate"
+
 #define RTSP_SDP "sdp"
 
 #define RTSP_UNAUTHORIZED_CODE "401"

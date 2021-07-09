@@ -68,6 +68,7 @@ public:
 
         passwordLineEdit = new QLineEdit(CRtspAuthorizeDialog);
         passwordLineEdit->setObjectName(QString::fromUtf8("passwordLineEdit"));
+        passwordLineEdit->setEchoMode(QLineEdit::Password);
 
         formLayout->setWidget(1, QFormLayout::FieldRole, passwordLineEdit);
 

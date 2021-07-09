@@ -40,6 +40,17 @@ void CRtspClient::uninitialize()
 	}
 }
 
+void CRtspClient::requestDescribeDigest(const QString& userName, const QString& realm, const QString& nonce, const QString& uri, const QString& response)
+{
+	QString describeMessage;
+
+	describeMessage = CRtspParser::getInstance()->makeDescribeMethodWithDigest(m_rtspUrl.toString(), m_nSEQ++,userName,realm,nonce,uri,response);
+
+	m_pRtspSocket->write(describeMessage.toLocal8Bit());
+
+	m_rtspState = KSK::ERtspState_DESCRIBE;
+}
+
 void CRtspClient::onConneted()
 {
 	requestOptionMethod();

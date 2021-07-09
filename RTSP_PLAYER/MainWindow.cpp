@@ -85,12 +85,15 @@ void CMainWindow::onRtspUnauthorized(std::map<QString, QString> headerMap)
 
 	if (m_rtspAuthorizeDialog.exec() == QDialog::Accepted)
 	{
-		hash1 = m_rtspAuthorizeDialog.getUserName() + ":" + headerMap["realm"] + m_rtspAuthorizeDialog.getPassword();
+		hash1 = m_rtspAuthorizeDialog.getUserName() + ":" + headerMap["Digest realm"] +":"+ m_rtspAuthorizeDialog.getPassword();
 		hash2 = "DESCRIBE:"+ headerMap["URL"];
 		hash3 = QCryptographicHash::hash(hash1.toLocal8Bit(), QCryptographicHash::Md5).toHex() +":"+headerMap["nonce"]+":"+
 			QCryptographicHash::hash(hash2.toLocal8Bit(),QCryptographicHash::Md5).toHex();
 
 		QByteArray hash3_md5 = QCryptographicHash::hash(hash3.toLocal8Bit(), QCryptographicHash::Md5).toHex();
+
+		m_pRtspClient->requestDescribeDigest(m_rtspAuthorizeDialog.getUserName(), headerMap["Digest realm"],
+			headerMap["nonce"], headerMap["URL"],hash3_md5);
 	}
 	else
 	{

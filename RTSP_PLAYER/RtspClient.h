@@ -14,6 +14,8 @@ public:
 	bool initialize();
 	void uninitialize();
 
+	void requestDescribeDigest(const QString& userName,const QString& realm,const QString& nonce,const QString& uri,
+		const QString& response);
 signals:
 	void unAuthorizedError(std::map<QString, QString> headerMap);
 
@@ -27,7 +29,7 @@ private:
 	
 	void requestOptionMethod();
 	void requestDescribeMethod();
-
+	
 private:
 	QUrl m_rtspUrl;
 	QTcpSocket *m_pRtspSocket = nullptr;	

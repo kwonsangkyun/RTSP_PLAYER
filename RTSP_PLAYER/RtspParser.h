@@ -36,6 +36,8 @@ public:
 
 	QString makeOptionMethod(const QString&rtspUrl, const int seq);
 	QString makeDescribeMethod(const QString&rtspUrl, const int seq);
+	QString makeDescribeMethodWithDigest(const QString&rtspUrl, const int seq, const QString& userName, const QString& realm, 
+		const QString& nonce, const QString& uri, const QString& response);
 	QString makeSetupMethod(const QString&rtspUrl, const int seq);
 	QString makePlayMethod(const QString&rtspUrl, const int seq, const QString &sessionId);
 
