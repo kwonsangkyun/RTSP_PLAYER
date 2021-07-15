@@ -6,6 +6,7 @@
 #include "UrlInputDialog.h"
 #include "RtspAuthorizeDialog.h"
 #include "RtspClient.h"
+#include "StreamDecoderThread.h"
 
 class CMainWindow : public QMainWindow
 {
@@ -21,6 +22,8 @@ private slots:
 	void onUrlOpenShortcut();
 	void onUrlInputDialogAccept();
 	void onRtspUnauthorized(std::map<QString,QString> headerMap);
+	void onNewFrame(const QByteArray frameData);
+	void onDecodeSuccess(QByteArray decodeFrame);
 
 private:
     Ui::CMainWindowClass ui;	
@@ -29,4 +32,5 @@ private:
 	CRtspAuthorizeDialog m_rtspAuthorizeDialog;
 
 	CRtspClient *m_pRtspClient = nullptr;
+	CStreamDecoderThread *m_pStreamDecoderThread = nullptr;
 };

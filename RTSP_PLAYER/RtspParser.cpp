@@ -51,15 +51,20 @@ QString CRtspParser::makeDescribeMethodWithDigest(const QString&rtspUrl, const i
 	message += QString::asprintf("%s: %s%s", RTSP_HEADER_NAME_USER_AGENT, KSK::DEFAULT_USER_AGENT, CRLF);
 	message += QString::asprintf("%s: %s%s", RTSP_HEADER_NAME_ACCEPT, KSK::DEFAULT_ACCEPT, CRLF);
 	message += QString::asprintf("%s", CRLF);
-
-
-	printf("%s\n", message.toStdString().c_str());
+	
 	return message;
 }
 
-QString CRtspParser::makeSetupMethod(const QString&rtspUrl, const int seq)
+QString CRtspParser::makeSetupMethod(const QString&rtspUrl, const int seq,const int clientSocketNumber)
 {
 	QString message;
+
+	message += QString::asprintf("%s %s %s%s", RTSP_METHOD_SETUP, rtspUrl.toStdString().c_str(), RTSP_VERSION, CRLF);
+	message += QString::asprintf("%s: %d%s", RTSP_HEADER_NAME_CSEQ, seq, CRLF);
+	message += QString::asprintf("%s: %s%s", RTSP_HEADER_NAME_USER_AGENT, KSK::DEFAULT_USER_AGENT, CRLF);
+	message += QString::asprintf("%s: %s%s", RTSP_HEADER_NAME_TRANSPORT, KSK::DEFAULT_TCP_TRASPORT, CRLF);
+	//message += QString::asprintf("%s: %sclient_port=%d%s", RTSP_HEADER_NAME_TRANSPORT, KSK::DEFAULT_UDP_TRASPORT,clientSocketNumber ,CRLF);
+	message += QString::asprintf("%s", CRLF);
 
 	return message;
 }
@@ -68,7 +73,47 @@ QString CRtspParser::makePlayMethod(const QString&rtspUrl, const int seq, const 
 {
 	QString message;
 
+	message += QString::asprintf("%s %s %s%s", RTSP_METHOD_PLAY, rtspUrl.toStdString().c_str(), RTSP_VERSION, CRLF);
+	message += QString::asprintf("%s: %d%s", RTSP_HEADER_NAME_CSEQ, seq, CRLF);
+	message += QString::asprintf("%s: %s%s", RTSP_HEADER_NAME_USER_AGENT, KSK::DEFAULT_USER_AGENT, CRLF);
+	message += QString::asprintf("%s: %s%s", RTSP_HEADER_NAME_SESSION, sessionId.toStdString().c_str(), CRLF);
+	message += QString::asprintf("%s: npt=0.000-%s",RTSP_HEADER_NAME_RANGE,CRLF);
+	message += QString::asprintf("%s", CRLF);
+
 	return message;
+}
+
+QString CRtspParser::parseSdp(const QString& sdp,const QString& rtspUrl)
+{
+	QString newUrl;
+	bool videoFind = false;
+	QStringList sdpList = sdp.split("\r\n", QString::SkipEmptyParts);
+
+	for each (QString sdpvalue in sdpList)
+	{
+		if (sdpvalue.contains("m=video"))
+			videoFind = true;
+
+		if (videoFind == true)
+		{
+			if (sdpvalue.contains("a=control") == false)
+				continue;
+
+			QStringList controlInfo = sdpvalue.split("a=control:", QString::SkipEmptyParts);
+
+			if (controlInfo.isEmpty() == false)
+			{
+				if (controlInfo.at(0).contains("rtsp"))
+					newUrl = controlInfo.at(0);
+				else
+					newUrl = rtspUrl + "/" + controlInfo.at(0);
+			}
+
+			break;
+		}
+	}
+
+	return newUrl;
 }
 
 std::map<QString,QString> CRtspParser::rtspResponseMessageParse(const QString&responseMessage)

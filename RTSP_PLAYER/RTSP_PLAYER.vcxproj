@@ -58,6 +58,22 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(Solutiondir)3rdParty\ffmpeg\include;D:\git_project\RTSP_PLAYER\3rdParty\opencv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(Solutiondir)3rdParty\ffmpeg\lib;D:\git_project\RTSP_PLAYER\3rdParty\opencv\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(Solutiondir)3rdParty\ffmpeg\include;D:\git_project\RTSP_PLAYER\3rdParty\opencv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(Solutiondir)3rdParty\ffmpeg\lib;D:\git_project\RTSP_PLAYER\3rdParty\opencv\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -88,6 +104,8 @@
     <ClCompile Include="RtspAuthorizeDialog.cpp" />
     <ClCompile Include="RtspClient.cpp" />
     <ClCompile Include="RtspParser.cpp" />
+    <ClCompile Include="StreamDecoder.cpp" />
+    <ClCompile Include="StreamDecoderThread.cpp" />
     <ClCompile Include="UrlInputDialog.cpp" />
     <QtRcc Include="MainWindow.qrc" />
     <QtUic Include="MainWindow.ui" />
@@ -102,6 +120,8 @@
     <ClInclude Include="RtspAuthorizeDialog.h" />
     <ClInclude Include="RtspParser.h" />
     <QtMoc Include="RtspClient.h" />
+    <ClInclude Include="StreamDecoder.h" />
+    <QtMoc Include="StreamDecoderThread.h" />
     <ClInclude Include="UrlInputDialog.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

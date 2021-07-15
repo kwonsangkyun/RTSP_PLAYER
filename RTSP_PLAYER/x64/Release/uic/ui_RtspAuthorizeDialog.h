@@ -12,70 +12,112 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QDialog>
+#include <QtWidgets/QFormLayout>
 #include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
-#include <QtWidgets/QWidget>
+#include <QtWidgets/QVBoxLayout>
 
 QT_BEGIN_NAMESPACE
 
-class Ui_Dialog
+class Ui_CRtspAuthorizeDialog
 {
 public:
-    QWidget *layoutWidget;
+    QVBoxLayout *verticalLayout;
+    QLabel *subjectLabel;
+    QFormLayout *formLayout;
+    QLabel *userNameLabel;
+    QLabel *passwordLabel;
+    QLineEdit *userNameLineEdit;
+    QLineEdit *passwordLineEdit;
     QHBoxLayout *hboxLayout;
     QSpacerItem *spacerItem;
     QPushButton *okButton;
     QPushButton *cancelButton;
 
-    void setupUi(QDialog *Dialog)
+    void setupUi(QDialog *CRtspAuthorizeDialog)
     {
-        if (Dialog->objectName().isEmpty())
-            Dialog->setObjectName(QString::fromUtf8("Dialog"));
-        Dialog->resize(400, 300);
-        layoutWidget = new QWidget(Dialog);
-        layoutWidget->setObjectName(QString::fromUtf8("layoutWidget"));
-        layoutWidget->setGeometry(QRect(20, 250, 351, 33));
-        hboxLayout = new QHBoxLayout(layoutWidget);
-#ifndef Q_OS_MAC
+        if (CRtspAuthorizeDialog->objectName().isEmpty())
+            CRtspAuthorizeDialog->setObjectName(QString::fromUtf8("CRtspAuthorizeDialog"));
+        CRtspAuthorizeDialog->resize(400, 300);
+        verticalLayout = new QVBoxLayout(CRtspAuthorizeDialog);
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        subjectLabel = new QLabel(CRtspAuthorizeDialog);
+        subjectLabel->setObjectName(QString::fromUtf8("subjectLabel"));
+
+        verticalLayout->addWidget(subjectLabel);
+
+        formLayout = new QFormLayout();
+        formLayout->setObjectName(QString::fromUtf8("formLayout"));
+        userNameLabel = new QLabel(CRtspAuthorizeDialog);
+        userNameLabel->setObjectName(QString::fromUtf8("userNameLabel"));
+
+        formLayout->setWidget(0, QFormLayout::LabelRole, userNameLabel);
+
+        passwordLabel = new QLabel(CRtspAuthorizeDialog);
+        passwordLabel->setObjectName(QString::fromUtf8("passwordLabel"));
+
+        formLayout->setWidget(1, QFormLayout::LabelRole, passwordLabel);
+
+        userNameLineEdit = new QLineEdit(CRtspAuthorizeDialog);
+        userNameLineEdit->setObjectName(QString::fromUtf8("userNameLineEdit"));
+
+        formLayout->setWidget(0, QFormLayout::FieldRole, userNameLineEdit);
+
+        passwordLineEdit = new QLineEdit(CRtspAuthorizeDialog);
+        passwordLineEdit->setObjectName(QString::fromUtf8("passwordLineEdit"));
+        passwordLineEdit->setEchoMode(QLineEdit::Password);
+
+        formLayout->setWidget(1, QFormLayout::FieldRole, passwordLineEdit);
+
+
+        verticalLayout->addLayout(formLayout);
+
+        hboxLayout = new QHBoxLayout();
         hboxLayout->setSpacing(6);
-#endif
-        hboxLayout->setContentsMargins(0, 0, 0, 0);
         hboxLayout->setObjectName(QString::fromUtf8("hboxLayout"));
         hboxLayout->setContentsMargins(0, 0, 0, 0);
         spacerItem = new QSpacerItem(131, 31, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         hboxLayout->addItem(spacerItem);
 
-        okButton = new QPushButton(layoutWidget);
+        okButton = new QPushButton(CRtspAuthorizeDialog);
         okButton->setObjectName(QString::fromUtf8("okButton"));
 
         hboxLayout->addWidget(okButton);
 
-        cancelButton = new QPushButton(layoutWidget);
+        cancelButton = new QPushButton(CRtspAuthorizeDialog);
         cancelButton->setObjectName(QString::fromUtf8("cancelButton"));
 
         hboxLayout->addWidget(cancelButton);
 
 
-        retranslateUi(Dialog);
-        QObject::connect(okButton, SIGNAL(clicked()), Dialog, SLOT(accept()));
-        QObject::connect(cancelButton, SIGNAL(clicked()), Dialog, SLOT(reject()));
+        verticalLayout->addLayout(hboxLayout);
 
-        QMetaObject::connectSlotsByName(Dialog);
+
+        retranslateUi(CRtspAuthorizeDialog);
+        QObject::connect(okButton, SIGNAL(clicked()), CRtspAuthorizeDialog, SLOT(accept()));
+        QObject::connect(cancelButton, SIGNAL(clicked()), CRtspAuthorizeDialog, SLOT(reject()));
+
+        QMetaObject::connectSlotsByName(CRtspAuthorizeDialog);
     } // setupUi
 
-    void retranslateUi(QDialog *Dialog)
+    void retranslateUi(QDialog *CRtspAuthorizeDialog)
     {
-        Dialog->setWindowTitle(QCoreApplication::translate("Dialog", "Dialog", nullptr));
-        okButton->setText(QCoreApplication::translate("Dialog", "OK", nullptr));
-        cancelButton->setText(QCoreApplication::translate("Dialog", "Cancel", nullptr));
+        CRtspAuthorizeDialog->setWindowTitle(QCoreApplication::translate("CRtspAuthorizeDialog", "RTSP \354\235\270\354\246\235", nullptr));
+        subjectLabel->setText(QCoreApplication::translate("CRtspAuthorizeDialog", "\354\240\225\355\231\225\355\225\234 \353\241\234\352\267\270\354\235\270 \354\235\264\353\246\204 \353\260\217 \353\271\204\353\260\200\353\262\210\355\230\270\353\245\274 \354\236\205\353\240\245\355\225\230\354\204\270\354\232\224.", nullptr));
+        userNameLabel->setText(QCoreApplication::translate("CRtspAuthorizeDialog", "\354\202\254\354\232\251\354\236\220\353\252\205", nullptr));
+        passwordLabel->setText(QCoreApplication::translate("CRtspAuthorizeDialog", "\353\271\204\353\260\200\353\262\210\355\230\270", nullptr));
+        okButton->setText(QCoreApplication::translate("CRtspAuthorizeDialog", "OK", nullptr));
+        cancelButton->setText(QCoreApplication::translate("CRtspAuthorizeDialog", "Cancel", nullptr));
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class Dialog: public Ui_Dialog {};
+    class CRtspAuthorizeDialog: public Ui_CRtspAuthorizeDialog {};
 } // namespace Ui
 
 QT_END_NAMESPACE

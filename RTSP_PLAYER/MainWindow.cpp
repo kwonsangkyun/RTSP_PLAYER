@@ -7,23 +7,6 @@ CMainWindow::CMainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
-	
-	QString id = "admin";
-	QString password = "minju0416!Q";
-	QString realm = "IP Camera(21592)";
-	QString cmd = "DESCRIBE";
-	QString url = "rtsp://192.168.83.147:554";
-	QString nonce = "6cf40348776d30ea4b40b20d1cec0bdb";
-
-	QString hash1 = id + ":" + realm + ":" + password;	
-	QString hash2 = cmd + ":" + url;
-
-	QByteArray hash1_md5 = QCryptographicHash::hash(hash1.toLocal8Bit(),QCryptographicHash::Md5).toHex();	
-	QByteArray hash2_md5 = QCryptographicHash::hash(hash2.toLocal8Bit(), QCryptographicHash::Md5).toHex();	
-
-	QString hash3 = hash1_md5 + ":" + nonce + ":"+ hash2_md5;
-	QByteArray hash3_md5 = QCryptographicHash::hash(hash3.toLocal8Bit(), QCryptographicHash::Md5).toHex();
-	
 }
 
 bool CMainWindow::initialize()
@@ -35,11 +18,23 @@ bool CMainWindow::initialize()
 	connect(m_urlOpenShortcut, &QShortcut::activated, this, &CMainWindow::onUrlOpenShortcut);
 	connect(&m_urlInputDialog, &QDialog::accepted, this, &CMainWindow::onUrlInputDialogAccept);
 	
+	m_pStreamDecoderThread = new CStreamDecoderThread;
+	connect(m_pStreamDecoderThread, &CStreamDecoderThread::onDecodeSuccess, this, &CMainWindow::onDecodeSuccess);
+	m_pStreamDecoderThread->start();
+
 	return true;
 }
 
 void CMainWindow::uninitialize()
 {
+	if (m_pStreamDecoderThread != nullptr)
+	{
+		m_pStreamDecoderThread->requestInterruption();
+		m_pStreamDecoderThread->wait();
+		m_pStreamDecoderThread->deleteLater();
+		m_pStreamDecoderThread = nullptr;
+	}
+
 	if (m_urlOpenShortcut != nullptr)
 	{
 		m_urlOpenShortcut->deleteLater();
@@ -66,6 +61,7 @@ void CMainWindow::onUrlInputDialogAccept()
 
 	m_pRtspClient = new CRtspClient(rtspUrl,false);
 	connect(m_pRtspClient, &CRtspClient::unAuthorizedError, this, &CMainWindow::onRtspUnauthorized);
+	connect(m_pRtspClient, &CRtspClient::onNewFrame, this, &CMainWindow::onNewFrame);
 
 	if (m_pRtspClient->initialize() == false)
 	{
@@ -101,4 +97,19 @@ void CMainWindow::onRtspUnauthorized(std::map<QString, QString> headerMap)
 		m_pRtspClient->deleteLater();
 		m_pRtspClient = nullptr;
 	}
+}
+
+void CMainWindow::onNewFrame(const QByteArray frameData)
+{
+	if (m_pStreamDecoderThread == nullptr)
+		return;
+
+	m_pStreamDecoderThread->push(frameData);
+}
+
+void CMainWindow::onDecodeSuccess(QByteArray decodeFrame)
+{
+	QImage image((uchar*)decodeFrame.data(),1920, 1080, QImage::Format_Grayscale8);
+	
+	ui.lb_video->setPixmap(QPixmap::fromImage(image).scaled(ui.lb_video->width(), ui.lb_video->height(), Qt::KeepAspectRatio));		
 }

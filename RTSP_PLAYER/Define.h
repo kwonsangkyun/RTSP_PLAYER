@@ -1,5 +1,14 @@
 #pragma once
 
+
+#define CRLF "\r\n"
+#define COLON 0x3A
+#define RTP_RTCP_TCP_STD_HEADER_SIZE 4
+#define RTP_RTCP_TCP_STD_FIRST_CHAR '$'
+#define RTP_HEADER_SIZE 12
+#define RTP_FU_A_HEADER_SIZE 2
+
+// RTSP Method
 #define RTSP_METHOD_OPTION "OPTIONS"
 #define RTSP_METHOD_DESCRIBE "DESCRIBE"
 #define RTSP_METHOD_SETUP "SETUP"
@@ -8,10 +17,8 @@
 #define RTSP_METHOD_TEARDOWN "TEARDOWN"
 #define RTSP_VERSION "RTSP/1.0"
 #define  RTSP_OK "RTSP/1.0 200 OK"
-#define CRLF "\r\n"
-#define COLON 0x3A
 
-// RTSP header¿Ã∏ßµÈ
+// RTSP header
 #define RTSP_HEADER_NAME_CSEQ "CSeq"
 #define RTSP_HEADER_NAME_DATE "Date"
 #define RTSP_HEADER_NAME_ALLOW "Allow"
@@ -42,7 +49,7 @@ namespace KSK
 	const char* const DEFAULT_USER_AGENT = "RTSP_PLAYER";
 	const char* const DEFAULT_ACCEPT = "application/sdp";
 	const char* const DEFAULT_TCP_TRASPORT = "RTP/AVP/TCP;unicast";
-	const char* const DEFAULT_UDP_TRASPORT = "RTP/AVP;unicast";
+	const char* const DEFAULT_UDP_TRASPORT = "RTP/AVP;unicast;";
 
 	enum ERtspState
 	{
@@ -51,5 +58,16 @@ namespace KSK
 		ERtspState_SETUP,
 		ERtspState_PLAY,
 		ERtspState_TEARDOWN
+	};
+
+	enum ENalUnit
+	{
+		ENalUnit_PFRAME = 1,
+		ENalUnit_IFRAME = 5,
+		ENalUnit_SEI = 6,
+		ENalUnit_SPS = 7,
+		ENalUnit_PPS = 8,
+		ENalUnit_FU_A = 28,
+		ENalUnit_FU_B = 29,
 	};
 }

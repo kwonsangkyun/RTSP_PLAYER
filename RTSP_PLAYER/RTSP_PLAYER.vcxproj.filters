@@ -52,6 +52,12 @@
     <ClCompile Include="RtspAuthorizeDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StreamDecoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StreamDecoderThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UrlInputDialog.h">
@@ -66,6 +72,9 @@
     <ClInclude Include="RtspAuthorizeDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StreamDecoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="UrlInputDialog.ui">
@@ -77,6 +86,9 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="RtspClient.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="StreamDecoderThread.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
