@@ -31,9 +31,10 @@ private slots:
 private:
 	void processRTSP(const QString& rtspMessage);
 	void processRTP(const QByteArray& rtpData);
-
+	void processSPropParameterSets();
 	void processSingleNal(const QByteArray& rtpData);
 	void processFU_A(const QByteArray& rtpData);
+	void processSTAP_A(const QByteArray& rtpData);
 	void processNewFrame(KSK::ENalUnit nalType);
 	
 	void requestOptionMethod();
@@ -48,6 +49,7 @@ private:
 	unsigned int m_nSEQ = 2;
 	unsigned int m_rtcpssrc;
 	QString m_sessionId;
+	QString m_parameterSet;
 	KSK::ERtspState m_rtspState;	
 
 	QByteArray m_buffer;

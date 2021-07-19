@@ -83,12 +83,12 @@ QString CRtspParser::makePlayMethod(const QString&rtspUrl, const int seq, const 
 	return message;
 }
 
-QString CRtspParser::parseSdp(const QString& sdp,const QString& rtspUrl)
+QString CRtspParser::parseSdp(const QString& sdp,const QString& rtspUrl, QString &parameterSet)
 {
 	QString newUrl;
 	bool videoFind = false;
 	QStringList sdpList = sdp.split("\r\n", QString::SkipEmptyParts);
-
+	
 	for each (QString sdpvalue in sdpList)
 	{
 		if (sdpvalue.contains("m=video"))
@@ -113,8 +113,24 @@ QString CRtspParser::parseSdp(const QString& sdp,const QString& rtspUrl)
 		}
 	}
 
+	QStringList sdpParameterSetList = sdp.split("sprop-parameter-sets=");
+	if (sdpParameterSetList.size() > 1)
+	{
+		QStringList parameterSetList = sdpParameterSetList[1].split("\r\n");
+		if (parameterSetList.empty() == false)
+			parameterSet = parameterSetList[0];
+	}
+	
 	return newUrl;
 }
+
+//SPropRecord CRtspParser::parseSPropParameterSets(QString parameterSetStr, unsigned int & numSPropRecords)
+//{	
+//	/*QStringList parameterSetStrList = parameterSetStr.split(',');
+//	numSPropRecords = parameterSetStrList.size();
+//
+//	for(unsigned int )*/
+//}
 
 std::map<QString,QString> CRtspParser::rtspResponseMessageParse(const QString&responseMessage)
 {

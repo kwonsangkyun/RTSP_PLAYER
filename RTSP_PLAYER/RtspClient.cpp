@@ -86,7 +86,7 @@ void CRtspClient::onReceivedData()
 
 			if (m_buffer.length() < payloadLength)
 				return;
-
+			
 			QByteArray rtpMessage = m_buffer.mid(RTP_RTCP_TCP_STD_HEADER_SIZE, payloadLength-RTP_RTCP_TCP_STD_HEADER_SIZE);
 			m_buffer = m_buffer.right(m_buffer.length() - payloadLength);			
 			processRTP(rtpMessage);
@@ -152,7 +152,7 @@ void CRtspClient::processRTSP(const QString& rtspMessage)
 		if (it == headerMap.end())
 			return;
 		
-		QString newUrl =  CRtspParser::getInstance()->parseSdp(it->second, m_rtspUrl.toString());
+		QString newUrl =  CRtspParser::getInstance()->parseSdp(it->second, m_rtspUrl.toString(), m_parameterSet);
 		if (newUrl.isEmpty() == false)
 			m_rtspUrl = QUrl(newUrl);
 
@@ -166,6 +166,11 @@ void CRtspClient::processRTSP(const QString& rtspMessage)
 			return;
 
 		m_sessionId = it->second;
+
+		if (m_parameterSet.isEmpty() == false)
+		{
+			processSPropParameterSets();
+		}
 
 		requestPlayMethod();
 		break; 
@@ -206,14 +211,21 @@ void CRtspClient::processRTP(const QByteArray& rtpData)
 		printf("ENalUnit_SEI\n");
 		break;
 	case KSK::ENalUnit_SPS:
+		printf("ENalUnit_SPS\n");
 		m_sps = QByteArray(rtpData.data() + RTP_HEADER_SIZE, rtpData.size() - RTP_HEADER_SIZE);
 		m_sps.push_front(m_startCode);		
 		break;
 	case KSK::ENalUnit_PPS:
+		printf("ENalUnit_PPS\n");
 		m_pps = QByteArray(rtpData.data() + RTP_HEADER_SIZE, rtpData.size() - RTP_HEADER_SIZE);
 		m_pps.push_front(m_startCode);
 		break;
-	case KSK::ENalUnit_FU_A:		
+	case  KSK::ENalUnit_STAP_A:
+		//printf("ENalUnit_STAP_A\n");
+		processSTAP_A(QByteArray(rtpData.data() + RTP_HEADER_SIZE, rtpData.size() - RTP_HEADER_SIZE));
+		break;
+	case KSK::ENalUnit_FU_A:
+		//printf("ENalUnit_FU_A\n");
 		processFU_A(QByteArray(rtpData.data() + RTP_HEADER_SIZE, rtpData.size() - RTP_HEADER_SIZE));
 		break;
 	case  KSK::ENalUnit_FU_B:
@@ -225,9 +237,33 @@ void CRtspClient::processRTP(const QByteArray& rtpData)
 	}
 }
 
+void CRtspClient::processSPropParameterSets()
+{
+	QStringList parameterList = m_parameterSet.split(',');
+
+	for (QString parameter : parameterList)
+	{
+		QByteArray decodeData = QByteArray::fromBase64(parameter.toLocal8Bit());
+		KSK::ENalUnit nalType =static_cast<KSK::ENalUnit>(decodeData[0] & 0x1F);
+		
+		if (nalType == KSK::ENalUnit_SPS)
+		{
+			m_sps = decodeData;
+			m_sps.push_front(m_startCode);
+			printf("sps Update\n");
+		}
+		else if (nalType == KSK::ENalUnit_PPS)
+		{
+			m_pps = decodeData;
+			m_pps.push_front(m_startCode);
+			printf("pps Update\n");
+		}
+	}
+}
+
 void CRtspClient::processSingleNal(const QByteArray& rtpData)
 {
-
+	
 }
 
 void CRtspClient::processFU_A(const QByteArray& rtpData)
@@ -259,12 +295,40 @@ void CRtspClient::processFU_A(const QByteArray& rtpData)
 	
 }
 
+void CRtspClient::processSTAP_A(const QByteArray& rtpData)
+{
+	QByteArray buffer = rtpData;	
+	char NalHDR = buffer[0];
+	buffer = buffer.right(buffer.length() - 1);
+
+	while (buffer.isEmpty() == false)
+	{
+		unsigned short naluSize = ntohs(*(unsigned short*)(rtpData.data() + 1));
+		naluSize += STAP_A_NALUNIT_HEADER_SIZE;
+
+		QByteArray naluPayload = buffer.mid(STAP_A_NALUNIT_HEADER_SIZE, naluSize- STAP_A_NALUNIT_HEADER_SIZE);
+		buffer = buffer.right(buffer.length() - naluSize);
+		KSK::ENalUnit nalType = static_cast<KSK::ENalUnit>(naluPayload[0] & 0x1F);
+
+		if (nalType == KSK::ENalUnit_SPS)
+		{
+			m_sps = naluPayload;
+			m_sps.push_front(m_startCode);			
+		}
+		else if (nalType == KSK::ENalUnit_PPS)
+		{
+			m_pps = naluPayload;
+			m_pps.push_front(m_startCode);			
+		}
+	}
+}
+
 void CRtspClient::processNewFrame(KSK::ENalUnit nalType)
 {
 	QByteArray frameData;
 	if (nalType == KSK::ENalUnit_IFRAME)
 		frameData = m_sps + m_pps + m_frameBuffer;
-	else if (nalType == KSK::ENalUnit_PFRAME)
+	else if (nalType == KSK::ENalUnit_PFRAME)		
 		frameData = m_frameBuffer;
 	else
 		return;

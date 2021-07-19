@@ -7,6 +7,7 @@
 #define RTP_RTCP_TCP_STD_FIRST_CHAR '$'
 #define RTP_HEADER_SIZE 12
 #define RTP_FU_A_HEADER_SIZE 2
+#define STAP_A_NALUNIT_HEADER_SIZE 2
 
 // RTSP Method
 #define RTSP_METHOD_OPTION "OPTIONS"
@@ -67,6 +68,7 @@ namespace KSK
 		ENalUnit_SEI = 6,
 		ENalUnit_SPS = 7,
 		ENalUnit_PPS = 8,
+		ENalUnit_STAP_A = 24,
 		ENalUnit_FU_A = 28,
 		ENalUnit_FU_B = 29,
 	};

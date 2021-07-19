@@ -41,7 +41,7 @@ public:
 	QString makeSetupMethod(const QString&rtspUrl, const int seq,const int clinetSocketNumber);
 	QString makePlayMethod(const QString&rtspUrl, const int seq, const QString &sessionId);
 
-	QString parseSdp(const QString& sdp,const QString& rtspUrl);
+	QString parseSdp(const QString& sdp,const QString& rtspUrl,QString &parameterSet);
 
 	std::map<QString, QString> rtspResponseMessageParse(const QString&responseMessage);
 	std::map<QString, QString> rtspUnauthorizedMessageParse(const QStringList& responseMessage);
